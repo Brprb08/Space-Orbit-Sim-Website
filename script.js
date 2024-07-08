@@ -4,10 +4,11 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 const planets = [];
-let spaceship = { x: 0, y: 0, vx: 0, vy: 0, isBeingPlaced: false, isSelectingVector: false };
+let spaceship = {};
 let initialPosition = { x: 0, y: 0 };
 const maxSpeed = 5;
 let isPlacingPlanet = false;
+let targetPlanet;
 
 function drawBackground() {
     ctx.fillStyle = 'black';
@@ -17,29 +18,48 @@ function drawBackground() {
 function drawPlanet(planet) {
     ctx.beginPath();
     ctx.arc(planet.x, planet.y, planet.radius, 0, Math.PI * 2);
-    ctx.fillStyle = 'blue';
+    ctx.fillStyle = planet.color || 'blue';
     ctx.fill();
 }
 
 function drawSpaceship() {
-    ctx.beginPath();
-    ctx.arc(spaceship.x, spaceship.y, 5, 0, Math.PI * 2);
-    ctx.fillStyle = 'red';
-    ctx.fill();
-    if (spaceship.isSelectingVector) {
+    if (spaceship.isBeingPlaced || spaceship.isSelectingVector || (spaceship.x !== 0 && spaceship.y !== 0)) {
         ctx.beginPath();
-        ctx.moveTo(spaceship.x, spaceship.y);
-        ctx.lineTo(initialPosition.x, initialPosition.y);
-        ctx.strokeStyle = 'white';
-        ctx.stroke();
+        ctx.arc(spaceship.x, spaceship.y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = 'red';
+        ctx.fill();
+        if (spaceship.isSelectingVector) {
+            ctx.beginPath();
+            ctx.moveTo(spaceship.x, spaceship.y);
+            ctx.lineTo(initialPosition.x, initialPosition.y);
+            ctx.strokeStyle = 'white';
+            ctx.stroke();
+        }
     }
+}
+
+function showWinScreen() {
+    ctx.fillStyle = 'white';
+    ctx.font = '48px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('You Win!', canvas.width / 2, canvas.height / 2);
+
+    setTimeout(() => {
+        resetGame();
+    }, 3000); // Show the win screen for 3 seconds before restarting the game
+}
+
+function resetGame() {
+    planets.length = 0; // Clear all planets
+    spaceship = { x: 0, y: 0, vx: 0, vy: 0, isBeingPlaced: false, isSelectingVector: false }; // Reset spaceship
+    addTargetPlanet(); // Add a new target planet
 }
 
 document.getElementById('addPlanetButton').addEventListener('click', () => {
     isPlacingPlanet = true;
     isPlacingSpaceship = false;
     const planet = {
-        x: 0, y: 0, radius: 20, isBeingPlaced: true, mass: Math.random() * 100 + 50 // Adding mass to the planets
+        x: 0, y: 0, radius: 20, isBeingPlaced: true, mass: Math.random() * 100 + 50, color: 'blue' // Adding mass and color to the planets
     };
     planets.push(planet);
 });
@@ -50,6 +70,7 @@ document.getElementById('launchSpaceshipButton').addEventListener('click', () =>
     spaceship.vx = (Math.random() - 0.5) * 2;
     spaceship.vy = (Math.random() - 0.5) * 2;
     spaceship.isBeingPlaced = false;
+    spaceship.isSelectingVector = false;
 });
 
 document.getElementById('placeSpaceshipButton').addEventListener('click', () => {
@@ -98,7 +119,7 @@ canvas.addEventListener('click', (event) => {
     }
 
     // Spaceships
-    if (!isPlacingPlanet) {
+    if (isPlacingSpaceship) {
         if (spaceship.isBeingPlaced && !spaceship.isSelectingVector) {
             initialPosition = { x: event.clientX, y: event.clientY };
             spaceship.isSelectingVector = true;
@@ -111,12 +132,16 @@ canvas.addEventListener('click', (event) => {
 
 function updateSpaceship() {
     let collision = false;
+    let win = false;
     for (let planet of planets) {
         const dx = planet.x - spaceship.x;
         const dy = planet.y - spaceship.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
         if (distance <= planet.radius) {
             collision = true;
+            if (planet === targetPlanet) {
+                win = true;
+            }
             break;
         }
         const force = (planet.mass) / (distance * distance);
@@ -125,7 +150,12 @@ function updateSpaceship() {
         spaceship.vy += force * Math.sin(angle);
     }
     if (collision) {
-        spaceship = { x: 0, y: 0, vx: 0, vy: 0, isBeingPlaced: true, isSelectingVector: false };
+        if (win) {
+            showWinScreen();
+            return;
+        } else {
+            spaceship = { x: 0, y: 0, vx: 0, vy: 0, isBeingPlaced: true, isSelectingVector: false };
+        }
     } else {
         spaceship.x += spaceship.vx;
         spaceship.y += spaceship.vy;
@@ -145,6 +175,11 @@ function drawTrajectory() {
             const dx = planet.x - tempX;
             const dy = planet.y - tempY;
             const distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance <= planet.radius) {
+                ctx.lineTo(tempX, tempY);
+                ctx.stroke();
+                return; // Stop drawing the trajectory if it hits a planet
+            }
             const force = (planet.mass) / (distance * distance);
             const angle = Math.atan2(dy, dx);
             tempVx += force * Math.cos(angle);
@@ -158,15 +193,30 @@ function drawTrajectory() {
     ctx.stroke();
 }
 
+function addTargetPlanet() {
+    const planet = {
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: 20,
+        mass: Math.random() * 100 + 50,
+        color: 'green' // Target planet is green
+    };
+    planets.push(planet);
+    targetPlanet = planet;
+}
+
 function update() {
     drawBackground();
     planets.forEach(drawPlanet);
-    if (!spaceship.isBeingPlaced) {
+    if (!spaceship.isBeingPlaced && spaceship.x !== 0 && spaceship.y !== 0) {
         updateSpaceship();
+        drawSpaceship();
     }
     drawSpaceship();
     drawTrajectory();
     requestAnimationFrame(update);
 }
 
+
+addTargetPlanet(); // Add the target planet when the script is loaded
 update();
