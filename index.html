@@ -4,13 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Space Orbit Simulator</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <canvas id="spaceCanvas"></canvas>
-    <button id="addPlanetButton">Add Planet</button>
-    <button id="launchSpaceshipButton">Launch Spaceship</button>
-    <button id="placeSpaceshipButton">Place Spaceship</button>
+    <div class="button-container">
+        <button id="addPlanetButton">Add Planet</button>
+        <button id="placeSpaceshipButton">Place Spaceship</button>
+    </div>
+    <div class="fire-button-container">
+        <button id="cancelButton" style="display: none;">Cancel</button>
+        <button id="fireButton" style="display: none;">Fire!</button>
+        <button id="restartButton" style="display: none;">Restart Game</button>
+    </div>
+      <!-- New Restart Button -->
+
     <script src="script.js"></script>
 </body>
 </html>

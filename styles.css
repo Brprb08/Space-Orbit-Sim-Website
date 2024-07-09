@@ -1,23 +1,115 @@
 body {
     margin: 0;
+    height: 100vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     background: black;
     color: white;
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
+    overflow: hidden;
+    position: relative;
 }
 
 canvas {
-    border: 1px solid white;
-    background: #000;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
 }
 
-button {
-    margin: 10px;
-    padding: 10px;
-    font-size: 16px;
+.button-container {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    bottom: 20%; /* This will place the buttons in the bottom half of the screen */
+    width: 100%;
+    z-index: 1;
+    padding: 10px 0;
+    background: rgba(0, 0, 0, 0); /* Semi-transparent background for the button container */
+}
+
+#addPlanetButton, #placeSpaceshipButton {
+    margin: 0 20px; /* Spacing between buttons */
+    padding: 15px 30px; /* Bigger buttons for better interaction */
+    font-size: 18px; /* Larger font for readability */
     color: white;
+    background-color: #333; /* Dark grey background */
+    border: none;
+    border-radius: 5px; /* Rounded corners for aesthetics */
     cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+#addPlanetButton:hover, #placeSpaceshipButton:hover {
+    background-color: #555; /* Darker grey on hover */
+    transform: scale(1.05); /* Subtle grow effect on hover */
+}
+
+.fire-button-container {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    bottom: 10%; /* This will place the buttons in the bottom half of the screen */
+    width: 100%;
+    z-index: 1;
+    padding: 10px 0;
+    background: rgba(0, 0, 0, 0); /* Semi-transparent background for the button container */
+}
+
+#fireButton {
+    background-color: red;
+    color: white;
+    font-size: 18px;
+    margin: 10px auto; /* Center button horizontally */
+    display: block; /* Ensure it takes a new line */
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+#fireButton:hover {
+    background-color: darkred;
+    transform: scale(1.05);
+}
+
+#cancelButton {
+    background-color: red;
+    color: white;
+    font-size: 18px;
+    margin: 10px auto; /* Center button horizontally */
+    display: block; /* Ensure it takes a new line */
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+#cancelButton:hover {
+    background-color: darkred;
+    transform: scale(1.05);
+}
+
+#restartButton {
+    background-color: red;
+    color: white;
+    font-size: 18px;
+    margin: 10px auto; /* Center button horizontally */
+    display: block; /* Ensure it takes a new line */
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+#restartButton:hover {
+    background-color: darkred;
+    transform: scale(1.05);
 }
